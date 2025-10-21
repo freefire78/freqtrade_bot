@@ -1,11 +1,23 @@
 from freqtrade import __version__
+from fastapi import FastAPI
+import uvicorn
 
-def main():
-    print(f"FreqTrade version: {__version__}")
-    print("FreqTrade bot is deployed successfully!")
-    
-    # Здесь можно добавить запуск вашего бота
-    # или оставить для веб-интерфейса
+app = FastAPI(title="FreqTrade Bot")
+
+@app.get("/")
+def read_root():
+    return {
+        "message": "FreqTrade Bot is running!",
+        "version": __version__,
+        "status": "active"
+    }
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
 
 if __name__ == "__main__":
-    main()
+    print(f"FreqTrade version: {__version__}")
+    print("FreqTrade bot is deployed successfully!")
+    # Запускаем веб-сервер
+    uvicorn.run(app, host="0.0.0.0", port=8000)
