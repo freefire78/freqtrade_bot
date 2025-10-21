@@ -25,25 +25,22 @@ def start_keep_alive():
     print("🔄 Keep-alive server started")
 
 def run_freqtrade():
-    """Запуск FreqTrade с правильной структурой"""
-    print("🚀 Starting FreqTrade with proper structure...")
-    
-    port = int(os.environ.get('PORT', 8000))
+    """Запуск FreqTrade без аргумента --port"""
+    print("🚀 Starting FreqTrade...")
     
     try:
-        # Теперь используем --userdir для указания папки
+        # Только необходимые аргументы
         subprocess.run([
             'freqtrade', 'webserver',
             '--config', 'config.json',
-            '--userdir', 'user_data',
-            '--port', str(port)
+            '--userdir', 'user_data'
         ])
     except Exception as e:
         print(f"❌ Error: {e}")
 
 if __name__ == "__main__":
     print("==========================================")
-    print("🤖 FreqTrade Bot with Proper Structure")
+    print("🤖 FreqTrade Bot - Simplified Version")
     print("==========================================")
     
     start_keep_alive()
