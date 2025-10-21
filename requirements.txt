@@ -1,5 +1,5 @@
 freqtrade
 ccxt
 python-dotenv
-fastapi
-uvicorn
+flask
+requests
