@@ -1,111 +1,51 @@
 import subprocess
 import os
-import sys
-import signal
 import time
 import threading
-import requests
-from background import keep_alive
+from flask import Flask
 
-# Глобальные переменные
-bot_status = "stopped"
-bot_process = None
-freqtrade_port = 8000
-keep_alive_port = 8080
+# Keep-alive сервер
+keep_alive_app = Flask(__name__)
+
+@keep_alive_app.route('/')
+def home():
+    return "🤖 FreqTrade Bot is alive!"
+
+@keep_alive_app.route('/health')
+def health():
+    return "✅ Healthy"
+
+def run_keep_alive():
+    keep_alive_app.run(host='0.0.0.0', port=8080)
+
+def start_keep_alive():
+    t = threading.Thread(target=run_keep_alive)
+    t.daemon = True
+    t.start()
+    print("🔄 Keep-alive server started")
 
 def run_freqtrade():
-    """Запуск FreqTrade веб-сервера"""
-    global bot_status, bot_process
+    """Запуск FreqTrade с правильной структурой"""
+    print("🚀 Starting FreqTrade with proper structure...")
+    
+    port = int(os.environ.get('PORT', 8000))
     
     try:
-        print("🚀 Starting FreqTrade Web Interface...")
-        bot_status = "starting"
-        
-        print(f"🌐 FreqTrade UI will be on port {freqtrade_port}")
-        print(f"🔗 Keep-alive server on port {keep_alive_port}")
-        print("📝 All logs visible in Render dashboard")
-        
-        # Запускаем FreqTrade веб-сервер
-        bot_process = subprocess.Popen([
+        # Теперь используем --userdir для указания папки
+        subprocess.run([
             'freqtrade', 'webserver',
             '--config', 'config.json',
-            '--strategy-path', 'strategies', 
-            '--port', str(freqtrade_port),
-            '--verbose'
+            '--userdir', 'user_data',
+            '--port', str(port)
         ])
-        
-        bot_status = "running"
-        print("✅ FreqTrade is now RUNNING")
-        
-        # Ждем завершения процесса
-        bot_process.wait()
-        
     except Exception as e:
-        bot_status = "error"
-        print(f"❌ Error starting FreqTrade: {e}")
-    finally:
-        bot_status = "stopped"
-        print("🛑 FreqTrade stopped")
-
-def start_keep_alive_ping():
-    """Пинг самого себя чтобы предотвратить сон"""
-    def ping_loop():
-        time.sleep(10)  # Ждем запуска сервера
-        
-        # Получаем URL нашего приложения (будет известен после деплоя)
-        render_url = os.environ.get('RENDER_URL', '')
-        
-        while True:
-            try:
-                # Пинг основного порта FreqTrade
-                response1 = requests.get(f'http://0.0.0.0:{freqtrade_port}/', timeout=10)
-                print(f"🔄 FreqTrade ping: {response1.status_code}")
-                
-                # Пинг keep-alive порта
-                response2 = requests.get(f'http://0.0.0.0:{keep_alive_port}/', timeout=10)
-                print(f"🔄 Keep-alive ping: {response2.status_code}")
-                
-            except Exception as e:
-                print(f"⚠️ Ping error: {e}")
-            
-            # Пинг каждые 5 минут (300 секунд)
-            time.sleep(300)
-    
-    ping_thread = threading.Thread(target=ping_loop, daemon=True)
-    ping_thread.start()
-    print("🔄 Auto-ping service started")
-
-def signal_handler(sig, frame):
-    """Обработчик сигналов для graceful shutdown"""
-    global bot_process, bot_status
-    
-    print("🛑 Received shutdown signal...")
-    bot_status = "stopping"
-    
-    if bot_process:
-        print("Terminating FreqTrade process...")
-        bot_process.terminate()
-        bot_process.wait()
-    
-    print("👋 Shutdown complete")
-    sys.exit(0)
+        print(f"❌ Error: {e}")
 
 if __name__ == "__main__":
-    # Регистрируем обработчики сигналов
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
+    print("==========================================")
+    print("🤖 FreqTrade Bot with Proper Structure")
+    print("==========================================")
     
-    print("=" * 60)
-    print("🤖 FreqTrade Bot with 24/7 Keep-Alive System")
-    print("🔄 Background server will prevent auto-sleep")
-    print("✅ Suitable for continuous operation")
-    print("=" * 60)
-    
-    # Запускаем keep-alive Flask сервер
-    keep_alive()
-    
-    # Запускаем само-пинг сервис
-    start_keep_alive_ping()
-    
-    # Запускаем FreqTrade
+    start_keep_alive()
+    time.sleep(2)
     run_freqtrade()
