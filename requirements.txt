@@ -1,0 +1,3 @@
+freqtrade
+ccxt
+python-dotenv

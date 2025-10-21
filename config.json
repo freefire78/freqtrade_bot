@@ -1,0 +1,97 @@
+﻿{
+  "strategy": "AdaptiveFractalGridScalping",
+  "timeframe": "5m",
+  "startup_candle_count": 50,
+  "process_only_new_candles": true,
+  "max_open_trades": 8,
+  "max_open_trades_per_pair": 1,
+  "stake_currency": "USDT",
+  "stake_amount": "unlimited",
+  "dry_run": true,
+  "use_exit_signal": true,
+  "exit_profit_only": false,
+  "ignore_roi_if_entry_signal": true,
+  "initial_state": "running",
+  "margin_mode": "isolated",
+  "trading_mode": "futures",
+
+  "exchange": {
+    "name": "bybit",
+    "key": "DHIZWjn4twiQv0wSQK",
+    "secret": "bJx9a9JxghCrrtDIG3piBqPtSTnoLAnuCQsh",
+    "ccxt_config": {},
+    "ccxt_async_config": {},
+    "pair_whitelist": [],
+    "pair_blacklist": [
+      ".*BULL/USDT", ".*BEAR/USDT", ".*UP/USDT", ".*DOWN/USDT", ".*USDT/.*USD.*", ".*USD.*/USDT"
+    ]
+  },
+  "order_types": {
+    "entry": "limit",
+    "exit": "limit",
+    "stoploss": "market",
+    "stoploss_on_exchange": false
+  },
+  "entry_pricing": {
+    "price_side": "other",
+    "use_order_book": true,
+    "order_book_top": 1
+  },
+  "exit_pricing": {
+    "price_side": "other",
+    "use_order_book": true,
+    "order_book_top": 1
+  },
+  "unfilledtimeout": {
+    "entry": 10,
+    "exit": 10,
+    "exit_timeout_count": 0,
+    "unit": "minutes"
+  },
+  "stoploss": -0.99,
+  "trailing_stop": true,
+  "trailing_stop_positive": 0.01,
+  "trailing_stop_positive_offset": 0.015,
+  "trailing_only_offset_is_reached": true,
+  "pairlists": [
+    {
+      "method": "VolumePairList",
+      "number_assets": 80,
+      "sort_key": "quoteVolume",
+      "min_value": 1000000,
+      "refresh_period": 60
+    }
+  ],
+  "protection": [
+    {
+      "method": "StoplossGuard",
+      "lookback_period_candles": 12,
+      "trade_limit": 1,
+      "stop_duration_candles": 10,
+      "only_per_pair": false
+    }
+  ],
+  "logging": {
+    "loglevel": "INFO"
+  },
+  "api_server": {
+    "enabled": true,
+    "listen_ip_address": "0.0.0.0",
+    "listen_port": 8083,
+    "verbosity": "info",
+    "enable_openapi": true,
+    "jwt_secret_key": "CHANGE_ME_TO_A_RANDOM_SECRET",
+    "CORS_origins": ["*"],
+    "username": "admin",
+    "password": "admin"
+  },
+  "ui": {
+    "enabled": true,
+    "username": "admin",
+    "password": "admin"
+  },
+  "leverage": {
+      "enabled": true,
+      "method": "strategy"
+  }
+} 
