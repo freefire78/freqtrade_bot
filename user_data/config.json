@@ -1,4 +1,4 @@
-﻿{
+{
   "strategy": "AdaptiveFractalGridScalping",
   "timeframe": "5m",
   "startup_candle_count": 50,
