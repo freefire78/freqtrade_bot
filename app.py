@@ -24,15 +24,17 @@ def run_freqtrade():
     print("🚀 Starting FreqTrade with detailed logging...")
     
     try:
-        # Запускаем с захватом stdout и stderr
+        # Запускаем с максимальным verbose и логированием в файл
         process = subprocess.Popen([
             'freqtrade', 'webserver',
             '--config', 'user_data/config.json',
             '--userdir', 'user_data',
-            '--verbosity', 'DEBUG'  # Добавляем детальное логирование
+            '-vvv',  # Максимальная детализация логов
+            '--logfile', 'freqtrade_debug.log'  # Логи в файл
         ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         
-        print("⏳ FreqTrade process started, reading output...")
+        print("⏳ FreqTrade process started...")
+        print("📝 Detailed logs in freqtrade_debug.log")
         
         # Читаем вывод в реальном времени
         while True:
@@ -55,19 +57,25 @@ def run_freqtrade():
 
 if __name__ == "__main__":
     print("==========================================")
-    print("🤖 FreqTrade Bot - Detailed Logging")
+    print("🤖 FreqTrade Bot - Debug Mode")
     print("==========================================")
     
-    # Покажем информацию о файле конфига
+    # Проверка конфига
     config_path = 'user_data/config.json'
     if os.path.exists(config_path):
         file_size = os.path.getsize(config_path)
         print(f"📄 Config file exists, size: {file_size} bytes")
         
-        # Читаем первые 200 символов для проверки
-        with open(config_path, 'r', encoding='utf-8') as f:
-            first_chars = f.read(200)
-            print(f"🔍 First 200 chars: {first_chars}")
+        # Попробуем прочитать и распарсить конфиг
+        try:
+            with open(config_path, 'r', encoding='utf-8') as f:
+                config_content = f.read()
+                config = json.loads(config_content)
+                print("✅ Config JSON syntax is valid!")
+        except json.JSONDecodeError as e:
+            print(f"❌ JSON Error: {e}")
+        except Exception as e:
+            print(f"❌ File Error: {e}")
     else:
         print("❌ Config file not found!")
     
