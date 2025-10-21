@@ -25,14 +25,26 @@ def start_keep_alive():
     print("🔄 Keep-alive server started")
 
 def run_freqtrade():
-    """Запуск FreqTrade без аргумента --port"""
+    """Запуск FreqTrade с конфигом из user_data"""
     print("🚀 Starting FreqTrade...")
     
     try:
-        # Только необходимые аргументы
+        # Указываем путь к конфигу в user_data
+        config_path = os.path.join('user_data', 'config.json')
+        print(f"📁 Config path: {config_path}")
+        
+        # Проверяем существует ли файл
+        if not os.path.exists(config_path):
+            print(f"❌ Config file not found at: {config_path}")
+            print("📂 Files in user_data:")
+            for file in os.listdir('user_data'):
+                print(f"   - {file}")
+            return
+        
+        # Запускаем FreqTrade
         subprocess.run([
             'freqtrade', 'webserver',
-            '--config', 'config.json',
+            '--config', config_path,
             '--userdir', 'user_data'
         ])
     except Exception as e:
@@ -40,8 +52,16 @@ def run_freqtrade():
 
 if __name__ == "__main__":
     print("==========================================")
-    print("🤖 FreqTrade Bot - Simplified Version")
+    print("🤖 FreqTrade Bot - Config in user_data")
     print("==========================================")
+    
+    # Покажем что в user_data
+    print("📂 Contents of user_data:")
+    try:
+        for item in os.listdir('user_data'):
+            print(f"   - {item}")
+    except Exception as e:
+        print(f"   Error listing user_data: {e}")
     
     start_keep_alive()
     time.sleep(2)
